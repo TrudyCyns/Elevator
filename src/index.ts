@@ -1,9 +1,5 @@
 export class Elevator {
-  // public status: "moving" | "idle" = "idle";
   public currentFloor = 1;
-  // private floors: number[] = [];
-  // private direction: "up" | "down" | "idle" = "idle";
-  // private peopleOnboard: number = 0;
   public isMoving: boolean = false;
   public waitingPeople: Floor | undefined;
   public weightLimit: number = 5;
@@ -11,13 +7,11 @@ export class Elevator {
   constructor(
     public floor: number,
     public peopleCount: number,
-    // public status: "moving" | "idle",
     public direction: "up" | "down" | "idle"
   ) {
     this.currentFloor = floor;
     this.peopleCount = peopleCount;
     this.isMoving = false;
-    // this.status = status;
     this.direction = direction;
   }
 }
@@ -26,10 +20,6 @@ class Floor {
   constructor(public floorNumber: number, public waitingPeople: number) {
     this.floorNumber = floorNumber;
     this.waitingPeople = waitingPeople;
-  }
-
-  public handleRequest(controller: ElevatorController) {
-    controller.requestElevator(this.floorNumber);
   }
 }
 
@@ -42,11 +32,15 @@ export class ElevatorController {
       this.floors.push(new Floor(i, 0));
     }
   }
-
+/**
+ * This method is used to request an elevator for a person at a certain floor. It checks for the elevator closest to the person and if it is full or not.
+ * 
+ * @param floorNumber - a number of the floor on which the person requesting the elevator is
+ */
   public requestElevator(floorNumber: number): any {
     if (floorNumber > this.numberOfFloors) {
       console.log("Floor does not exist");
-      return;
+      return false;
     }
 
     const waitingPeople = this.updateWaitingPeople(floorNumber);
@@ -78,6 +72,12 @@ export class ElevatorController {
     }
   }
 
+  /**
+   * This method finds the elevator closest to the person requesting it.
+   * 
+   * @param floorNumber - the number of the floor to check the closest elevator to it.
+   * @returns the nearest elevator to the given floor number
+   */
   public findnearestAvaibleElevator(floorNumber: number) {
     let nearestElevator: Elevator | null = null;
     let shortestDistance: number = Infinity;
@@ -95,6 +95,9 @@ export class ElevatorController {
     return nearestElevator;
   }
 
+  /**
+   * Updates the number of people waiting on a certain floor by 1 on each elevator requesr.
+   */
   public updateWaitingPeople(floorNumber: number) {
     const floor = this.floors.find((f) => f.floorNumber === floorNumber);
 
@@ -105,13 +108,3 @@ export class ElevatorController {
     return floor;
   }
 }
-
-const elevator1 = new Elevator(1, 5, "up");
-const elevator2 = new Elevator(2, 6, "idle");
-const elevator3 = new Elevator(3, 2, "down");
-
-const elevatorController = new ElevatorController(7);
-
-// elevatorController.updateWaitingPeople(1);
-
-elevatorController.elevators.push(elevator1, elevator2, elevator3);
